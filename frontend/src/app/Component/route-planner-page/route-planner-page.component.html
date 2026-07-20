@@ -1,0 +1,45 @@
+<main class="planner">
+  <section class="panel hero">
+    <div>
+      <p>Route planner</p>
+      <h1>Compare bus routes with traffic-aware ETA.</h1>
+    </div>
+    <button type="button" (click)="refreshTraffic()"><mat-icon>traffic</mat-icon>Refresh traffic</button>
+  </section>
+
+  <section class="grid">
+    <form class="panel controls" (ngSubmit)="planRoute()">
+      <label>Source<select [(ngModel)]="source" name="source"><option *ngFor="let city of cities">{{ city }}</option></select></label>
+      <label>Destination<select [(ngModel)]="destination" name="destination"><option *ngFor="let city of cities">{{ city }}</option></select></label>
+      <label>Waypoints<input [(ngModel)]="waypointInput" name="waypoints" placeholder="Gurugram, Jaipur" /></label>
+      <button type="submit"><mat-icon>route</mat-icon>Plan route</button>
+      <div class="empty" *ngIf="favorites.length === 0">Saved favorite routes will appear here.</div>
+      <button class="favorite" type="button" *ngFor="let favorite of favorites" (click)="loadFavorite(favorite)">
+        <mat-icon>star</mat-icon>{{ favorite.cities.join(' → ') }}
+      </button>
+    </form>
+
+    <section class="panel map" aria-label="Interactive route map">
+      <svg viewBox="0 0 600 620" role="img" aria-label="Route comparison map">
+        <rect width="600" height="620" rx="8"></rect>
+        <g *ngFor="let route of routes; let index = index">
+          <polyline [attr.points]="route.points" [class.active]="selectedRoute === index" (click)="selectedRoute = index"></polyline>
+        </g>
+        <g *ngFor="let city of cities">
+          <circle [attr.cx]="cityPoints[city].x" [attr.cy]="cityPoints[city].y" r="5"></circle>
+          <text [attr.x]="cityPoints[city].x + 8" [attr.y]="cityPoints[city].y + 4">{{ city }}</text>
+        </g>
+      </svg>
+    </section>
+  </section>
+
+  <section class="routes">
+    <article class="panel route" *ngFor="let route of routes; let index = index" [class.active]="selectedRoute === index" (click)="selectedRoute = index">
+      <h2>{{ route.name }}</h2>
+      <p>{{ route.cities.join(' → ') }}</p>
+      <strong>{{ route.distance }} km</strong>
+      <span>{{ route.eta }} min ETA · {{ route.traffic }} traffic</span>
+      <button type="button" (click)="saveFavorite(route); $event.stopPropagation()"><mat-icon>star_border</mat-icon>Save</button>
+    </article>
+  </section>
+</main>

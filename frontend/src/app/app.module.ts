@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonModule} from '@angular/material/button';
@@ -32,7 +32,14 @@ import { BusBookingFormComponent } from './Component/selectbus-page/right/bus-bo
 import { PaymentPageComponent } from './Component/payment-page/payment-page.component';
 import { ProfilePageComponent } from './Component/profile-page/profile-page.component';
 import { MyTripComponent } from './Component/profile-page/my-trip/my-trip.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { CommunityPageComponent } from './Component/community-page/community-page.component';
+import { NotificationsPageComponent } from './Component/notifications-page/notifications-page.component';
+import { TranslatePipe } from './pipe/translate.pipe';
+import { RoutePlannerPageComponent } from './Component/route-planner-page/route-planner-page.component';
+import { ReviewsPageComponent } from './Component/reviews-page/reviews-page.component';
+import { GlobalErrorHandlerService } from './service/global-error-handler.service';
+import { NetworkErrorInterceptor } from './service/network-error.interceptor';
 @NgModule({
   declarations: [
     AppComponent,
@@ -53,7 +60,12 @@ import { HttpClientModule } from '@angular/common/http';
     BusBookingFormComponent,
     PaymentPageComponent,
     ProfilePageComponent,
-    MyTripComponent
+    MyTripComponent,
+    CommunityPageComponent,
+    NotificationsPageComponent,
+    TranslatePipe,
+    RoutePlannerPageComponent,
+    ReviewsPageComponent
   ],
   imports: [
     BrowserModule,
@@ -71,7 +83,11 @@ import { HttpClientModule } from '@angular/common/http';
     MatDividerModule,
     HttpClientModule
   ],
-  providers: [provideNativeDateAdapter()],
+  providers: [
+    provideNativeDateAdapter(),
+    { provide: ErrorHandler, useClass: GlobalErrorHandlerService },
+    { provide: HTTP_INTERCEPTORS, useClass: NetworkErrorInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

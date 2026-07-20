@@ -3,7 +3,100 @@
 @tailwind components;
 @tailwind utilities;
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body {
+    --app-bg: #f8fafc;
+    --surface: #ffffff;
+    --soft-surface: #f1f5f9;
+    --text-primary: #1f2937;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+    --border-color: #e5e7eb;
+    --input-bg: #ffffff;
+    background: var(--app-bg);
+    color: var(--text-primary);
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    transition: background-color 180ms ease, color 180ms ease;
+}
+body.dark-theme {
+    --app-bg: #0f172a;
+    --surface: #172033;
+    --soft-surface: #1f2a44;
+    --text-primary: #f8fafc;
+    --text-secondary: #dbe4f0;
+    --text-muted: #a9b7cc;
+    --border-color: #334155;
+    --input-bg: #111827;
+}
+body.dark-theme nav,
+body.dark-theme .bg-white {
+    background-color: var(--surface) !important;
+    color: var(--text-primary) !important;
+}
+body.dark-theme input,
+body.dark-theme select,
+body.dark-theme textarea {
+    background-color: var(--input-bg) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+body.dark-theme .text-gray-400,
+body.dark-theme .text-gray-500,
+body.dark-theme .text-gray-600,
+body.dark-theme .text-gray-700,
+body.dark-theme .text-black {
+    color: var(--text-primary) !important;
+}
+button, a, .mat-mdc-menu-item {
+    transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+    outline: 3px solid rgba(216, 78, 85, 0.5);
+    outline-offset: 3px;
+}
+.skip-link {
+    background: #d84e55;
+    color: white;
+    font-weight: 800;
+    left: 1rem;
+    padding: 0.75rem 1rem;
+    position: fixed;
+    top: 0.75rem;
+    transform: translateY(-140%);
+    z-index: 9999;
+}
+.skip-link:focus {
+    transform: translateY(0);
+}
+button:hover:not(:disabled), a:hover {
+    transform: translateY(-1px);
+}
+img {
+    max-width: 100%;
+}
+.mat-mdc-menu-panel {
+    border-radius: 8px !important;
+}
+.ProfilePannel, .SingleTrip, .notify-panel, .panel, .post-card {
+    transition: box-shadow 180ms ease, border-color 180ms ease;
+}
+.SingleTrip:hover, .notify-panel:hover, .panel:hover, .post-card:hover {
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.10);
+}
+@media (max-width: 760px) {
+    nav {
+        gap: 0.75rem;
+        overflow-x: auto;
+    }
+    .ProfilePannel {
+        flex-direction: column;
+    }
+}
 ::-webkit-scrollbar{
     background: white;
     width: 0;

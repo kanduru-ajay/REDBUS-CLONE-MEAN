@@ -1,0 +1,31 @@
+<main class="reviews">
+  <section class="panel hero">
+    <div>
+      <p>Ratings & reviews</p>
+      <h1>Review completed bus journeys.</h1>
+    </div>
+    <strong>{{ summary.averageRating || '0.0' }} ★ average</strong>
+  </section>
+  <section class="grid">
+    <form class="panel" (ngSubmit)="submitReview()">
+      <h2>Write a review</h2>
+      <div class="skeleton" *ngIf="isLoading"></div>
+      <label>Completed journey<select [(ngModel)]="selectedBookingId" name="booking"><option *ngFor="let booking of bookings" [value]="booking._id || booking.id">{{ booking.departureDetails.city }} → {{ booking.arrivalDetails.city }}</option></select></label>
+      <label>Rating<select [(ngModel)]="rating" name="rating"><option *ngFor="let star of [1,2,3,4,5]" [value]="star">{{ star }} star</option></select></label>
+      <label>Review<textarea [(ngModel)]="content" name="content" rows="5" minlength="20" placeholder="Share boarding, punctuality, comfort, and route details."></textarea></label>
+      <button type="submit"><mat-icon>rate_review</mat-icon>Publish review</button>
+      <p class="success" *ngIf="message">{{ message }}</p>
+      <p class="error" *ngIf="error">{{ error }}</p>
+    </form>
+    <section class="panel feed">
+      <h2>Recent reviews</h2>
+      <article class="review" *ngFor="let review of summary.reviews">
+        <header><strong>{{ review.rating }} ★ {{ review.routeName }}</strong><span *ngIf="review.trustedReviewer">Trusted reviewer</span></header>
+        <p>{{ review.content }}</p>
+        <small>{{ review.userName }}</small>
+        <button type="button" (click)="report(review)"><mat-icon>flag</mat-icon>Report</button>
+      </article>
+      <p class="empty" *ngIf="summary.reviews.length === 0">No visible reviews yet.</p>
+    </section>
+  </section>
+</main> 

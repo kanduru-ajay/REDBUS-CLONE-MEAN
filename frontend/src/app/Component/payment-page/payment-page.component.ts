@@ -58,11 +58,9 @@ ngOnInit(): void {
   
   this.dataservice.currentdata.subscribe(data=>{
     this.routedetails=data;
-    console.log(data)
   })
   this.dataservice.passdata.subscribe(data=>{
     this.passengerdetails=data;
-    console.log(data)
   })
 }
 getloggedinuser():any{
@@ -103,10 +101,9 @@ makepayment():void{
     // console.log(myBooking)
     this.busservice.addbusmongo(myBooking).subscribe({
       next:(response)=>{
-        console.log('Bus post request success',response);
       },
       error:(error)=>{
-        console.error('Post request failed',error)
+        sessionStorage.setItem('tedbus-network-error', error?.error?.error || 'Booking failed. Please retry.')
       }
     })
 }

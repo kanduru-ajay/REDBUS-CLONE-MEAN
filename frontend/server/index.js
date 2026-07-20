@@ -10,9 +10,15 @@ app.use(bodyparser.json())
 const customerroutes=require("./routes/customer");
 const routesroute=require("./routes/route");
 const bookingroute=require("./routes/booking")
+const communityroute=require("./routes/community")
+const notificationroute=require("./routes/notification")
+const reviewroute=require("./routes/review")
 app.use(bookingroute)
 app.use(routesroute)
 app.use(customerroutes)
+app.use(communityroute)
+app.use(notificationroute)
+app.use(reviewroute)
 
 const DBURL="mongodb+srv://admin:admin@tedbus.vqk1yid.mongodb.net/?retryWrites=true&w=majority&appName=tedbus"
 mongoose.connect(DBURL)

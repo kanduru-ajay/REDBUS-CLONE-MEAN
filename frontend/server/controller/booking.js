@@ -1,8 +1,14 @@
 const Booking=require("../models/booking");
+const { createNotification } = require("./notification");
 
 exports.addbooking=async(req,res)=>{
     const booking =await Booking.create(req.body);
-    console.log(booking);
+    await createNotification({
+        userId: booking.customerId,
+        type: "booking_confirmation",
+        channels: ["inApp", "email", "push"],
+        metadata: { bookingId: booking._id, route: `${booking.departureDetails.city} to ${booking.arrivalDetails.city}` }
+    });
     res.send(booking);
 }
 

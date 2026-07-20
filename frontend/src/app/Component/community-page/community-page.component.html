@@ -1,0 +1,192 @@
+<main class="community-shell">
+  <section class="community-hero">
+    <div>
+      <p class="eyebrow">Tedbus Community</p>
+      <h1>Stories, route forums, and trusted advice from verified travelers.</h1>
+      <p class="hero-copy">
+        Share journey stories, ask route-specific questions, collect destination tips, and help keep travel content
+        useful through reports and moderation.
+      </p>
+    </div>
+    <div class="hero-stats" aria-label="Community activity summary">
+      <span>{{ posts.length }}</span>
+      <small>visible posts</small>
+      <span>{{ activityCount }}</span>
+      <small>your activity</small>
+    </div>
+  </section>
+
+  <section class="composer" aria-labelledby="create-community-post">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Verified posting</p>
+        <h2 id="create-community-post">Create a community post</h2>
+      </div>
+      <span class="verified-pill" [class.locked]="!isVerified">
+        <mat-icon>{{ isVerified ? 'verified' : 'lock' }}</mat-icon>
+        {{ isVerified ? ('verifiedUser' | translate) : ('signInRequired' | translate) }}
+      </span>
+    </div>
+
+    <form class="post-form" (ngSubmit)="createPost()" #communityForm="ngForm">
+      <label>
+        Post type
+        <select [(ngModel)]="postForm.type" name="type" required aria-label="Post type">
+          <option value="story">Journey story</option>
+          <option value="tip">Travel tip</option>
+          <option value="discussion">Discussion</option>
+        </select>
+      </label>
+      <label>
+        Forum
+        <select [(ngModel)]="postForm.forumType" name="forumType" required aria-label="Forum type">
+          <option value="route">Route-based forum</option>
+          <option value="destination">Destination forum</option>
+          <option value="advice">Travel advice forum</option>
+        </select>
+      </label>
+      <label>
+        Route
+        <input [(ngModel)]="postForm.routeName" name="routeName" placeholder="Delhi to Jaipur" />
+      </label>
+      <label>
+        Destination
+        <input [(ngModel)]="postForm.destination" name="destination" placeholder="Jaipur" />
+      </label>
+      <label class="wide">
+        Title
+        <input [(ngModel)]="postForm.title" name="title" minlength="6" required placeholder="What should travelers know?" />
+      </label>
+      <label class="wide">
+        Story, question, or advice
+        <textarea
+          [(ngModel)]="postForm.content"
+          name="content"
+          minlength="20"
+          required
+          rows="5"
+          placeholder="Write practical details, timing, boarding point advice, safety notes, or questions."
+        ></textarea>
+      </label>
+      <label>
+        Tips
+        <textarea [(ngModel)]="postForm.tips" name="tips" rows="3" placeholder="One tip per line"></textarea>
+      </label>
+      <label>
+        Tags
+        <input [(ngModel)]="postForm.tags" name="tags" placeholder="night travel, family, food" />
+      </label>
+      <label class="photo-upload">
+        <mat-icon>add_photo_alternate</mat-icon>
+        <span>{{ postForm.photos.length ? postForm.photos.length + ' photo(s) selected' : 'Upload trip photos' }}</span>
+        <input type="file" accept="image/*" multiple (change)="onPhotoSelected($event)" />
+      </label>
+      <button class="primary-action" type="submit" [disabled]="isSaving || !isVerified">
+        <mat-icon>publish</mat-icon>
+        {{ isSaving ? ('publishing' | translate) : ('publishPost' | translate) }}
+      </button>
+    </form>
+
+    <p class="message error" *ngIf="errorMessage" role="alert">{{ errorMessage }}</p>
+    <p class="message success" *ngIf="successMessage" role="status">{{ successMessage }}</p>
+  </section>
+
+  <section class="community-content">
+    <aside class="filters" aria-label="Community filters">
+      <button
+        *ngFor="let forum of forumOptions"
+        type="button"
+        [class.active]="activeForum === forum.value"
+        (click)="setForum(forum.value)"
+      >
+        <mat-icon>{{ forum.icon }}</mat-icon>
+        {{ forum.label }}
+      </button>
+      <div class="sort-panel">
+        <label>
+          Sort posts
+          <select [(ngModel)]="activeSort" (ngModelChange)="setSort($event)" aria-label="Sort community posts">
+            <option value="trending">Trending posts</option>
+            <option value="most-liked">Most liked posts</option>
+            <option value="recent">Recent posts</option>
+          </select>
+        </label>
+      </div>
+    </aside>
+
+    <div class="feed" aria-live="polite">
+      <div class="skeleton-card" *ngIf="isLoading"></div>
+      <div class="empty-state" *ngIf="!isLoading && posts.length === 0">
+        <mat-icon>travel_explore</mat-icon>
+        <h2>No conversations here yet</h2>
+        <p>Start the first verified post for this forum.</p>
+      </div>
+
+      <article class="post-card" *ngFor="let post of posts; trackBy: trackByPostId">
+        <header>
+          <div class="avatar" aria-hidden="true">
+            <img *ngIf="post.authorAvatar" [src]="post.authorAvatar" [alt]="post.authorName" />
+            <span *ngIf="!post.authorAvatar">{{ post.authorName.charAt(0) }}</span>
+          </div>
+          <div>
+            <p class="author">{{ post.authorName }} <mat-icon>verified</mat-icon></p>
+            <p class="meta">
+              {{ post.type }} · {{ post.forumType }} forum
+              <span *ngIf="post.routeName">· {{ post.routeName }}</span>
+              <span *ngIf="post.destination">· {{ post.destination }}</span>
+            </p>
+          </div>
+          <span class="status" *ngIf="post.status === 'flagged'">Flagged</span>
+        </header>
+
+        <h2>{{ post.title }}</h2>
+        <p class="content">{{ post.content }}</p>
+
+        <div class="tips" *ngIf="post.tips.length">
+          <span *ngFor="let tip of post.tips"><mat-icon>check_circle</mat-icon>{{ tip }}</span>
+        </div>
+
+        <div class="photos" *ngIf="post.photos.length">
+          <img *ngFor="let photo of post.photos" [src]="photo" alt="Traveler uploaded community photo" loading="lazy" />
+        </div>
+
+        <div class="tags" *ngIf="post.tags.length">
+          <span *ngFor="let tag of post.tags">#{{ tag }}</span>
+        </div>
+
+        <div class="actions">
+          <button type="button" (click)="toggleLike(post)" [attr.aria-pressed]="hasLiked(post)">
+            <mat-icon>{{ hasLiked(post) ? 'favorite' : 'favorite_border' }}</mat-icon>
+            {{ post.likes.length }}
+          </button>
+          <button type="button" (click)="sharePost(post, 'native')"><mat-icon>ios_share</mat-icon> Share</button>
+          <button type="button" (click)="sharePost(post, 'twitter')"><i class="fa-brands fa-x-twitter"></i></button>
+          <button type="button" (click)="sharePost(post, 'whatsapp')"><i class="fa-brands fa-whatsapp"></i></button>
+          <button type="button" class="report" (click)="reportPost(post)"><mat-icon>flag</mat-icon> Report</button>
+        </div>
+
+        <div class="admin-tools" *ngIf="isAdmin">
+          <button type="button" (click)="moderate(post, 'visible')">Approve</button>
+          <button type="button" (click)="moderate(post, 'flagged')">Flag</button>
+          <button type="button" (click)="moderate(post, 'hidden')">Hide</button>
+        </div>
+
+        <section class="comments" aria-label="Comments">
+          <h3>{{ post.comments.length }} comment(s)</h3>
+          <p class="comment" *ngFor="let comment of post.comments">
+            <strong>{{ comment.authorName }}</strong>
+            {{ comment.content }}
+          </p>
+          <div class="comment-box">
+            <input
+              [(ngModel)]="commentDrafts[post._id || post.title]"
+              placeholder="Add a helpful comment"
+              aria-label="Add a comment"
+            />
+            <button type="button" (click)="addComment(post)">Reply</button>
+          </div>
+        </section>
+      </article>
+    </div>
+  </section>
+</main>

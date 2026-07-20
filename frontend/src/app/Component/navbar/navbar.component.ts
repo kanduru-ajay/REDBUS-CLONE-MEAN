@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 declare var google:any;
 import { CustomerService } from '../../service/customer.service';
-import { Customer } from '../../model/customer.model';
 import { Router } from '@angular/router';
+import { I18nService } from '../../service/i18n.service';
+import { ThemeService } from '../../service/theme.service';
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent implements OnInit{
-constructor(private router:Router,private customerservice:CustomerService){}
+constructor(private router:Router,private customerservice:CustomerService, public i18n:I18nService, public themeService:ThemeService){}
 isloggedIn:boolean=false
 ngOnInit(): void {
   if(sessionStorage.getItem("Loggedinuser")){
@@ -20,7 +21,7 @@ ngOnInit(): void {
 
 
   google.accounts.id.initialize({
-    client_id:"129421237209-jricn8ed4fgld4glk6k716deq5ebsmpb.apps.googleusercontent.com",
+    client_id:"219794022558-rm6cibeebapkp2dgnnbi266igo7i5nrq.apps.googleusercontent.com",
     callback:(response:any)=>{this.handlelogin(response);
 
     }
@@ -46,14 +47,12 @@ private decodetoken(token:String){
 }
 handlelogin(response:any){
   const payload=this.decodetoken(response.credential)
-  // console.log(payload)
   this.customerservice.addcustomermongo(payload).subscribe({
     next:(response)=>{
-      console.log('POST success',response);
       sessionStorage.setItem("Loggedinuser",JSON.stringify(response))
     },
     error:(error)=>{
-      console.error('Posr request failed',error)
+      sessionStorage.setItem('tedbus-network-error', error?.error?.error || 'Sign-in failed. Please retry.')
     }
   })
 }
@@ -64,5 +63,11 @@ handlelogout(){
 }
 navigate(route:string){
   this.router.navigate([route])
+}
+changeLanguage(language:string){
+  this.i18n.setLanguage(language)
+}
+toggleTheme(){
+  this.themeService.toggle()
 }
 }

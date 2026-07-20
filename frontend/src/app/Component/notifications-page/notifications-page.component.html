@@ -1,0 +1,66 @@
+<main class="notify-shell">
+  <section class="notify-panel">
+    <div>
+      <p class="eyebrow">{{ 'notifications' | translate }}</p>
+      <h1>{{ 'notificationCenter' | translate }}</h1>
+      <p>Booking confirmations, cancellations, schedule updates, journey reminders, promotions, and delivery history.</p>
+    </div>
+    <div class="counter" aria-label="Unread notifications">{{ unreadCount() }} unread</div>
+  </section>
+
+  <section class="notify-grid">
+    <form class="notify-panel" *ngIf="preferences" (ngSubmit)="savePreferences()">
+      <h2>{{ 'preferences' | translate }}</h2>
+      <label>
+        {{ 'language' | translate }}
+        <select [(ngModel)]="preferences.locale" name="locale">
+          <option value="en">English</option>
+          <option value="hi">Hindi</option>
+        </select>
+      </label>
+      <label class="toggle">
+        <input type="checkbox" [(ngModel)]="preferences.promotionalEnabled" name="promotionalEnabled" />
+        {{ 'promotionalNotifications' | translate }}
+      </label>
+      <label class="toggle">
+        <input type="checkbox" [(ngModel)]="preferences.preferredChannels.inApp" name="inApp" />
+        In-app
+      </label>
+      <label class="toggle">
+        <input type="checkbox" [(ngModel)]="preferences.preferredChannels.email" name="email" />
+        Email
+      </label>
+      <label class="toggle">
+        <input type="checkbox" [(ngModel)]="preferences.preferredChannels.push" name="push" />
+        Push
+      </label>
+      <button type="submit"><mat-icon>save</mat-icon>{{ 'savePreferences' | translate }}</button>
+    </form>
+
+    <section class="notify-panel history">
+      <h2>{{ 'history' | translate }}</h2>
+      <div class="skeleton" *ngIf="isLoading"></div>
+      <p class="message error" *ngIf="error">{{ error }}</p>
+      <p class="message success" *ngIf="message">{{ message }}</p>
+      <div class="empty" *ngIf="!isLoading && notifications.length === 0">
+        <mat-icon>notifications_none</mat-icon>
+        <p>{{ 'noNotifications' | translate }}</p>
+      </div>
+      <article class="notification" *ngFor="let notification of notifications" [class.unread]="!notification.readAt">
+        <header>
+          <div>
+            <h3>{{ notification.title }}</h3>
+            <p>{{ notification.message }}</p>
+          </div>
+          <button type="button" (click)="markRead(notification)" *ngIf="!notification.readAt">{{ 'markRead' | translate }}</button>
+        </header>
+        <div class="delivery">
+          <span *ngFor="let delivery of notification.delivery">
+            {{ delivery.channel }} · {{ delivery.status }} · attempts {{ delivery.attempts }}
+            <button type="button" *ngIf="delivery.status !== 'sent'" (click)="retry(notification)">{{ 'retry' | translate }}</button>
+          </span>
+        </div>
+      </article>
+    </section>
+  </section>
+</main>

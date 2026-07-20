@@ -24,7 +24,6 @@ export class ProfilePageComponent implements OnInit{
     this.currentemail=user.email;
     this.busbooking.getbusmongo(user._id).subscribe((response:any)=>{
       this.mytrip=response
-      console.log(this.mytrip)
     })
   }
 }
