@@ -1,12 +1,11 @@
-const express = require("express")
+const express = require("express");
 const router = express.Router();
-const customercontroller = require("../controller/customer")
 
-// Add new customer
-router.post("/customer", customercontroller.addnewcustomer)
+const customercontroller = require("../controller/customer");
 
-// Get customer profile
-router.get("/", customercontroller.getCustomer)
+router.post("/customer", customercontroller.addnewcustomer);
+
+router.get("/", customercontroller.getCustomer);
 
 module.exports = router;
 // const express=require("express")
