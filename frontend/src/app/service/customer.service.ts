@@ -3,20 +3,33 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Customer } from '../model/customer.model';
 import { url } from '../config';
+
 @Injectable({
   providedIn: 'root'
 })
 export class CustomerService {
-  private apiurl:string=url + 'customer/'
-  constructor(private http:HttpClient) { }
 
-  addcustomermongo(user:any):Observable<Customer>{
-    const customer:Customer={
-      name:user.name,
-      email:user.email,
-      googleId:user.id,
-      profilepicture:user.picture
+  private apiurl:string = url + 'customer/';
+
+  constructor(private http: HttpClient) { }
+
+  addcustomermongo(user:any): Observable<Customer> {
+    const customer: Customer = {
+      name: user.name,
+      email: user.email,
+      googleId: user.id,
+      profilepicture: user.picture
     }
-    return this.http.post<Customer>(this.apiurl,customer  )
-}
+
+    return this.http.post<Customer>(this.apiurl, customer);
+  }
+
+
+  // ADD THIS FUNCTION
+  getCustomer(email:string): Observable<Customer> {
+    return this.http.get<Customer>(
+      this.apiurl + '?email=' + email
+    );
+  }
+
 }
