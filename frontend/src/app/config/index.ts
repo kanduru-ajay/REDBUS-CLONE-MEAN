@@ -1,1 +1,1 @@
-export const url:string='http://localhost:5000/';
+export const url:string='https://redbusbackend1-bgsx84eb.b4a.run/';
