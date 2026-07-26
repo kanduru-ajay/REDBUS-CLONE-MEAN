@@ -46,15 +46,34 @@ private decodetoken(token:String){
   return JSON.parse(atob(token.split(".")[1]))
 }
 handlelogin(response:any){
-  const payload=this.decodetoken(response.credential)
+  const payload = this.decodetoken(response.credential);
+
   this.customerservice.addcustomermongo(payload).subscribe({
-    next:(response)=>{
-      sessionStorage.setItem("Loggedinuser",JSON.stringify(response))
+    next: (customer:any) => {
+
+      sessionStorage.setItem(
+        "Loggedinuser",
+        JSON.stringify(customer)
+      );
+
+      this.isloggedIn = true;
+
+      // Navigate after successful login
+      this.router.navigate(['/']);
+
+      // Optional: refresh navbar state
+      window.location.reload();
+
     },
-    error:(error)=>{
-      sessionStorage.setItem('tedbus-network-error', error?.error?.error || 'Sign-in failed. Please retry.')
+    error: (error) => {
+      console.error(error);
+
+      sessionStorage.setItem(
+        'tedbus-network-error',
+        error?.error?.error || 'Sign-in failed. Please retry.'
+      );
     }
-  })
+  });
 }
 handlelogout(){
   google.accounts.id.disableAutoSelect();
