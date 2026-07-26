@@ -1,1 +1,1 @@
-export const url:string='https://redbusbackend1-n2df0uek.b4a.run/';
+export const url:string='https://redbus-backend-0pm6.onrender.com/';
